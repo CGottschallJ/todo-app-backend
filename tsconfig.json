@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJs",
+    "moduleResolution": "node10",
+    "outDir": "./dist", // This is where the compiled code will be stored
+    "rootDir": "./src", // This is where the source code is stored
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}
