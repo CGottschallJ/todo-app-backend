@@ -1,11 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import { supabase } from '../supabase';
 
-// Extend Express Request type to include userId
+// Extend Express Request type to include userId and token
 declare global {
   namespace Express {
     interface Request {
       userId?: string;
+      userToken?: string;
     }
   }
 }
@@ -36,8 +37,9 @@ export async function authenticateUser(
       return res.status(401).json({ error: 'Invalid or expired token' });
     }
 
-    // 4. Add verified user ID to request object
+    // 4. Add verified user ID AND TOKEN to request object
     req.userId = user.id;
+    req.userToken = token;
 
     // 5. Continue to the route handler
     next();

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { supabase } from '../supabase';
+import { createAuthenticatedClient } from '../supabase';
 import { authenticateUser } from '../middleware/auth';
 
 const router = Router();
@@ -9,7 +9,10 @@ router.use(authenticateUser);
 
 // Get all lists for authenticated user
 router.get('/', async (req, res) => {
-  const userId = req.userId!; // From verified JWT, not header!
+  const userId = req.userId!;
+  const userToken = req.userToken!;
+
+  const supabase = createAuthenticatedClient(userToken);
 
   const { data, error } = await supabase
     .from('lists')
@@ -23,8 +26,11 @@ router.get('/', async (req, res) => {
 
 // Create a new list
 router.post('/', async (req, res) => {
-  const userId = req.userId!; // From verified JWT
+  const userId = req.userId!;
+  const userToken = req.userToken!;
   const { name } = req.body;
+
+  const supabase = createAuthenticatedClient(userToken);
 
   const { data, error } = await supabase
     .from('lists')
@@ -39,6 +45,9 @@ router.post('/', async (req, res) => {
 // Delete a list
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
+  const userToken = req.userToken!;
+
+  const supabase = createAuthenticatedClient(userToken);
 
   const { error } = await supabase.from('lists').delete().eq('id', id);
 
@@ -50,6 +59,9 @@ router.delete('/:id', async (req, res) => {
 router.patch('/:id', async (req, res) => {
   const { id } = req.params;
   const updates = req.body;
+  const userToken = req.userToken!;
+
+  const supabase = createAuthenticatedClient(userToken);
 
   const { data, error } = await supabase
     .from('lists')

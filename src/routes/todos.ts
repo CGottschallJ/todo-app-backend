@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { supabase } from '../supabase';
+import { createAuthenticatedClient } from '../supabase'; // 👈 CHANGED import
 import { authenticateUser } from '../middleware/auth';
 
 const router = Router();
@@ -9,7 +9,10 @@ router.use(authenticateUser);
 
 // Get all todos for authenticated user
 router.get('/', async (req, res) => {
-  const userId = req.userId!; // From verified JWT
+  const userId = req.userId!;
+  const userToken = req.userToken!; // 👈 ADD
+
+  const supabase = createAuthenticatedClient(userToken); // 👈 ADD
 
   const { data, error } = await supabase
     .from('todos')
@@ -24,6 +27,9 @@ router.get('/', async (req, res) => {
 // Get todos for a specific list
 router.get('/list/:listId', async (req, res) => {
   const { listId } = req.params;
+  const userToken = req.userToken!; // 👈 ADD
+
+  const supabase = createAuthenticatedClient(userToken); // 👈 ADD
 
   const { data, error } = await supabase
     .from('todos')
@@ -37,8 +43,11 @@ router.get('/list/:listId', async (req, res) => {
 
 // Create a new todo
 router.post('/', async (req, res) => {
-  const userId = req.userId!; // From verified JWT
+  const userId = req.userId!;
+  const userToken = req.userToken!; // 👈 ADD
   const { title, list_id } = req.body;
+
+  const supabase = createAuthenticatedClient(userToken); // 👈 ADD
 
   const { data, error } = await supabase
     .from('todos')
@@ -54,6 +63,9 @@ router.post('/', async (req, res) => {
 router.patch('/:id', async (req, res) => {
   const { id } = req.params;
   const updates = req.body;
+  const userToken = req.userToken!; // 👈 ADD
+
+  const supabase = createAuthenticatedClient(userToken); // 👈 ADD
 
   const { data, error } = await supabase
     .from('todos')
@@ -69,6 +81,9 @@ router.patch('/:id', async (req, res) => {
 // Delete a todo
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
+  const userToken = req.userToken!; // 👈 ADD
+
+  const supabase = createAuthenticatedClient(userToken); // 👈 ADD
 
   const { error } = await supabase.from('todos').delete().eq('id', id);
 
